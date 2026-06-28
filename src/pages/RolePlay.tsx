@@ -439,6 +439,8 @@ async function generateShadowSentences(lesson: Lesson, googleKey: string): Promi
     return getSentencesForLesson(lesson.id);
   }
 }
+
+function speakText(text: string, onEnd?: () => void) {
   const synth = window.speechSynthesis;
   synth.cancel();
   const utt = new SpeechSynthesisUtterance(text);
