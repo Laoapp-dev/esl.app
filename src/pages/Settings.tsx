@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Globe, Sun, Volume2, Shuffle, Lightbulb,
   Trash2, Save, AlertTriangle, ChevronRight, Check,
-  Moon, Monitor, Type,
+  Moon, Monitor, Type, Droplets,
 } from 'lucide-react';
 import { useApp } from '@/App';
 import { useAuth } from '@/hooks/useAuth';
@@ -89,7 +89,7 @@ export function Settings() {
                 <p className="font-semibold text-foreground">{username || 'User'}</p>
                 <p className="text-xs text-muted-foreground">{email || 'No email set'}</p>
                 {currentUser?.role === 'admin' && (
-                  <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F5A623]/15 text-[#F5A623]">ADMIN</span>
+                  <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F5A623]/15 text-[#00B4D8]">ADMIN</span>
                 )}
               </div>
             </div>
@@ -180,20 +180,21 @@ export function Settings() {
             {/* Theme */}
             <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
               <p className="text-sm font-semibold text-foreground">Theme</p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {[
-                  { value: 'light' as const,  label: 'Light',  icon: Sun     },
-                  { value: 'dark'  as const,  label: 'Dark',   icon: Moon    },
-                  { value: 'system' as const, label: 'System', icon: Monitor },
+                  { value: 'light'      as const, label: 'Light',  icon: Sun      },
+                  { value: 'dark'       as const, label: 'Dark',   icon: Moon     },
+                  { value: 'light-blue' as const, label: 'Ocean',  icon: Droplets },
+                  { value: 'system'     as const, label: 'System', icon: Monitor  },
                 ].map(t => {
                   const active = vocabulary.settings.theme === t.value;
                   return (
                     <button key={t.value} onClick={() => vocabulary.updateSettings({ theme: t.value })}
                       className={`flex flex-col items-center gap-2 rounded-xl py-4 text-sm font-medium transition-all border
                         ${active
-                          ? 'border-[#F5A623] bg-[#FFF3DD] text-foreground shadow-sm'
+                          ? 'border-[#00B4D8] bg-[#E0F7FA] dark:bg-[#003B4A] text-foreground shadow-sm light-blue:bg-[#CCEEFF]'
                           : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted'}`}>
-                      <t.icon className={`h-5 w-5 ${active ? 'text-[#F5A623]' : ''}`} strokeWidth={1.5} />
+                      <t.icon className={`h-5 w-5 ${active ? 'text-[#00B4D8]' : ''}`} strokeWidth={1.5} />
                       {t.label}
                     </button>
                   );
@@ -215,9 +216,9 @@ export function Settings() {
                     <button key={s.value} onClick={() => vocabulary.updateSettings({ fontSize: s.value })}
                       className={`flex flex-col items-center gap-2 rounded-xl py-4 font-medium transition-all border
                         ${active
-                          ? 'border-[#F5A623] bg-[#FFF3DD] text-foreground'
+                          ? 'border-[#00B4D8] bg-[#E0F7FA] dark:bg-[#003B4A] text-foreground'
                           : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted'}`}>
-                      <Type className={`h-5 w-5 ${active ? 'text-[#F5A623]' : ''}`} strokeWidth={1.5} />
+                      <Type className={`h-5 w-5 ${active ? 'text-[#00B4D8]' : ''}`} strokeWidth={1.5} />
                       <span className={s.cls}>{s.label}</span>
                     </button>
                   );

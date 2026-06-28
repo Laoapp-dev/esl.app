@@ -52,7 +52,7 @@ export interface AppSettings {
   autoPlayPronunciation: boolean;
   shuffleCards: boolean;
   showHints: boolean;
-  theme: 'light' | 'dark' | 'system';
+  theme: 'light' | 'dark' | 'system' | 'light-blue';
   fontSize: 'small' | 'medium' | 'large';
   googleSheetUrl: string;
   autoSync: boolean;

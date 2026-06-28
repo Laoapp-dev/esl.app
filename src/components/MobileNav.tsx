@@ -29,7 +29,7 @@ export function MobileNav() {
   return (
     <>
       {/* ── Bottom navigation bar ─────────────────────────────────────────── */}
-      <nav className="sidebar-mobile fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#1A1A2E] mobile-nav-safe">
+      <nav className="sidebar-mobile fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 mobile-nav-safe">
         <div className="flex items-stretch justify-around px-1 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
           {BAR_ITEMS.map(item => {
             if (item.to === '__menu__') {
@@ -38,9 +38,9 @@ export function MobileNav() {
                   key="menu"
                   onClick={() => setDrawerOpen(true)}
                   className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-medium transition-all
-                    ${drawerOpen ? 'text-[#F5A623] bg-white/5' : 'text-white/40 hover:text-white/70'}`}
+                    ${drawerOpen ? 'text-[#00B4D8] bg-white/5' : 'text-white/40 hover:text-white/70'}`}
                 >
-                  <Menu className={`h-5 w-5 ${drawerOpen ? 'text-[#F5A623]' : ''}`} strokeWidth={drawerOpen ? 2 : 1.5} />
+                  <Menu className={`h-5 w-5 ${drawerOpen ? 'text-[#00B4D8]' : ''}`} strokeWidth={drawerOpen ? 2 : 1.5} />
                   <span>More</span>
                 </button>
               );
@@ -49,9 +49,9 @@ export function MobileNav() {
             return (
               <NavLink key={item.to} to={item.to} end={item.exact}
                 className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-medium transition-all
-                  ${active ? 'text-[#F5A623] bg-white/5' : 'text-white/40 hover:text-white/70'}`}
+                  ${active ? 'text-[#00B4D8] bg-white/5' : 'text-white/40 hover:text-white/70'}`}
               >
-                <item.icon className={`h-5 w-5 ${active ? 'text-[#F5A623]' : ''}`} strokeWidth={active ? 2 : 1.5} />
+                <item.icon className={`h-5 w-5 ${active ? 'text-[#00B4D8]' : ''}`} strokeWidth={active ? 2 : 1.5} />
                 <span>{item.label}</span>
               </NavLink>
             );
@@ -91,10 +91,10 @@ export function MobileNav() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-white truncate">{profile.username}</p>
                   <div className="flex items-center gap-1 text-[11px] text-white/40">
-                    <Flame className="h-3 w-3 text-[#F5A623]" />
+                    <Flame className="h-3 w-3 text-[#00B4D8]" />
                     <span>{profile.currentStreak}d streak</span>
                     {currentUser?.role === 'admin' && (
-                      <span className="ml-2 px-1.5 py-0.5 rounded bg-[#F5A623]/20 text-[#F5A623] text-[10px] font-bold">ADMIN</span>
+                      <span className="ml-2 px-1.5 py-0.5 rounded bg-[#F5A623]/20 text-[#00B4D8] text-[10px] font-bold">ADMIN</span>
                     )}
                   </div>
                 </div>
@@ -169,8 +169,8 @@ function DrawerLink({ to, icon: Icon, label, onNav, pathname, accent }: {
         ${active ? 'bg-white/10 text-white' : 'text-white/50 hover:bg-white/5 hover:text-white'}`}
     >
       {active && <div className="absolute left-4 h-4 w-[3px] rounded-r-full bg-[#F5A623]" />}
-      <Icon className={`h-5 w-5 flex-shrink-0 ${accent || active ? 'text-[#F5A623]' : ''}`} strokeWidth={1.5} />
-      <span className={accent ? 'text-[#F5A623]' : ''}>{label}</span>
+      <Icon className={`h-5 w-5 flex-shrink-0 ${accent || active ? 'text-[#00B4D8]' : ''}`} strokeWidth={1.5} />
+      <span className={accent ? 'text-[#00B4D8]' : ''}>{label}</span>
     </NavLink>
   );
 }

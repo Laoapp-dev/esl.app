@@ -335,7 +335,9 @@ export function useVocabulary(dataKeyPrefix?: string) {
     const applyTheme = () => {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const isDark = settings.theme === 'dark' || (settings.theme === 'system' && prefersDark);
+      const isLightBlue = settings.theme === 'light-blue';
       root.classList.toggle('dark', isDark);
+      root.classList.toggle('light-blue', isLightBlue);
     };
     applyTheme();
     // Listen for system preference changes when theme is 'system'
