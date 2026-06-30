@@ -7,8 +7,8 @@
  *
  * Two capabilities:
  *  1. evaluateWriting()  — scores typed text against a topic prompt
- *  2. evaluateSpeaking() — transcribes audio (Groq Whisper if available,
- *                          else Web Speech API result passed in) then scores it
+ *  2. evaluateSpeaking() — scores a transcript captured via the browser's
+ *                          Web Speech API against a topic prompt
  *
  * Both fall back to a local heuristic scorer if no API key is configured,
  * so the feature always works, just with simpler feedback.
@@ -19,7 +19,7 @@ import type { CEFRLevel } from '@/data/speakingTopics';
 
 const ADMIN_API_KEYS_KEY = 'moe_admin_api_cfg';
 
-function getAdminKeys(): { google?: string; groq?: string } {
+function getAdminKeys(): { google?: string } {
   try {
     const raw = localStorage.getItem(ADMIN_API_KEYS_KEY);
     return raw ? JSON.parse(raw) : {};
@@ -59,21 +59,9 @@ async function callGemini(systemPrompt: string, userPrompt: string, googleKey: s
   throw new Error(lastErr || 'All Gemini models failed');
 }
 
-/** Groq Whisper: transcribe audio blob → text. Falls back gracefully if no key. */
-export async function transcribeAudio(audioBlob: Blob, groqKey: string): Promise<string> {
-  const form = new FormData();
-  form.append('file', new File([audioBlob], 'audio.webm', { type: audioBlob.type || 'audio/webm' }));
-  form.append('model', 'whisper-large-v3-turbo');
-  form.append('language', 'en');
-  const res = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${groqKey}` },
-    body: form,
-  });
-  if (!res.ok) throw new Error(`Groq STT error ${res.status}`);
-  const data = await res.json();
-  return data.text?.trim() || '';
-}
+/** Note: speech-to-text is handled entirely by the browser's built-in Web
+ * Speech API (see useSpeech.ts / Practice.tsx) — no third-party STT key is used. */
+
 
 function buildEvalSystemPrompt(level: CEFRLevel, mode: 'writing' | 'speaking'): string {
   return `You are an expert ESL examiner evaluating a CEFR ${level}-level English ${mode} sample.
@@ -181,8 +169,4 @@ export async function evaluateSpeaking(params: {
 
 export function hasGeminiKey(): boolean {
   return !!getAdminKeys().google;
-}
-
-export function hasGroqKey(): boolean {
-  return !!getAdminKeys().groq;
 }

@@ -215,9 +215,8 @@ function doGet() {
   // AI API Keys state (admin-only, stored under protected key)
   const loadAiCfg = () => { try { return JSON.parse(localStorage.getItem(ADMIN_API_KEYS_KEY) || '{}'); } catch { return {}; } };
   const [aiGoogleKey,      setAiGoogleKey]      = useState<string>(() => loadAiCfg().google      || '');
-  const [aiGroqKey,        setAiGroqKey]         = useState<string>(() => loadAiCfg().groq        || '');
   const [aiElevenKey,      setAiElevenKey]       = useState<string>(() => loadAiCfg().elevenlabs  || '');
-  const [aiElevenVoice,    setAiElevenVoice]     = useState<string>(() => loadAiCfg().elevenVoice || '');
+  const [aiElevenVoice,    setAiElevenVoice]     = useState<string>(() => loadAiCfg().elevenVoice || 'JBFqnCBsd6RMkjVDRZzb');
   const [aiKeySaved,       setAiKeySaved]        = useState(false);
   const [showAiKeys,       setShowAiKeys]        = useState<Record<string,boolean>>({});
   const toggleShowKey = (k: string) => setShowAiKeys(prev => ({ ...prev, [k]: !prev[k] }));
@@ -225,9 +224,8 @@ function doGet() {
   const saveAiKeys = () => {
     localStorage.setItem(ADMIN_API_KEYS_KEY, JSON.stringify({
       google:      aiGoogleKey.trim(),
-      groq:        aiGroqKey.trim(),
       elevenlabs:  aiElevenKey.trim(),
-      elevenVoice: aiElevenVoice.trim(),
+      elevenVoice: aiElevenVoice.trim() || 'JBFqnCBsd6RMkjVDRZzb',
     }));
     setAiKeySaved(true);
     setTimeout(() => setAiKeySaved(false), 2500);
@@ -655,40 +653,6 @@ function doGet() {
             </p>
           </div>
 
-          {/* ── Groq ── */}
-          <div className="bg-card rounded-xl border border-border p-5 space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-orange-50 flex items-center justify-center shrink-0">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="#F55036">
-                  <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm0 3a7 7 0 1 1 0 14A7 7 0 0 1 12 5Zm0 2a5 5 0 1 0 0 10A5 5 0 0 0 12 7Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/>
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-foreground">Groq</p>
-                <p className="text-xs text-muted-foreground">Ultra-fast speech-to-text (Whisper)</p>
-              </div>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${aiGroqKey ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
-                {aiGroqKey ? '✓ Set' : 'Not set'}
-              </span>
-            </div>
-            <div className="relative">
-              <Input
-                type={showAiKeys['groq'] ? 'text' : 'password'}
-                placeholder="gsk_…"
-                value={aiGroqKey}
-                onChange={e => setAiGroqKey(e.target.value)}
-                className="pr-10"
-              />
-              <button onClick={() => toggleShowKey('groq')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors text-xs">
-                {showAiKeys['groq'] ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Free tier: 2,000 min/month · <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer" className="text-[#4A90E2] hover:underline">Get key at Groq Console →</a>
-            </p>
-          </div>
-
           {/* ── ElevenLabs ── */}
           <div className="bg-card rounded-xl border border-border p-5 space-y-3">
             <div className="flex items-center gap-3">
@@ -701,7 +665,7 @@ function doGet() {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-foreground">ElevenLabs</p>
-                <p className="text-xs text-muted-foreground">Natural AI voice for sentence playback</p>
+                <p className="text-xs text-muted-foreground">Natural AI voice for pronunciation playback (British male)</p>
               </div>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${aiElevenKey ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
                 {aiElevenKey ? '✓ Set' : 'Not set'}
@@ -720,10 +684,10 @@ function doGet() {
                 {showAiKeys['eleven'] ? 'Hide' : 'Show'}
               </button>
             </div>
-            <Field label="Voice ID (optional)" note="Leave blank to use the default 'Sarah' voice.">
+            <Field label="Voice ID" note="Defaults to 'George' — a male, British-English voice, for accurate pronunciation modeling.">
               <Input
                 type="text"
-                placeholder="EXAVITQu4vr4xnSDxMaL  (default: Sarah)"
+                placeholder="JBFqnCBsd6RMkjVDRZzb  (default: George — British male)"
                 value={aiElevenVoice}
                 onChange={e => setAiElevenVoice(e.target.value)}
                 className="font-mono text-xs"
@@ -741,8 +705,7 @@ function doGet() {
             <div className="space-y-1.5">
               {[
                 { label: 'Google Gemini', key: aiGoogleKey,  role: 'Lesson generation & AI replies' },
-                { label: 'Groq Whisper',  key: aiGroqKey,    role: 'Speech-to-text transcription'   },
-                { label: 'ElevenLabs',    key: aiElevenKey,  role: 'AI voice playback'               },
+                { label: 'ElevenLabs',    key: aiElevenKey,  role: 'AI voice playback (British male)' },
               ].map(p => (
                 <div key={p.label} className="flex items-center gap-2.5 text-sm">
                   <div className={`h-2 w-2 rounded-full shrink-0 ${p.key ? 'bg-emerald-500' : 'bg-muted-foreground/30'}`} />

@@ -8,9 +8,9 @@
  *  2. On the topic screen, the learner can EITHER or BOTH:
  *       - Write a response (typed text)
  *       - Speak a response (record audio in-browser, or upload an audio file)
- *  3. On submit, AI evaluates the response (Gemini for text; audio is
- *     transcribed first via Groq Whisper if configured, else the browser's
- *     Web Speech API result is used) and returns a score + feedback.
+ *  3. On submit, AI evaluates the response (Google Gemini for text; audio is
+ *     transcribed using the browser's built-in Web Speech API) and returns
+ *     a score + feedback.
  *  4. Every submission is saved to this user's practice history, which
  *     feeds the stats shown on the Dashboard.
  */
@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePracticeSubmissions } from '@/hooks/usePracticeSubmissions';
-import { evaluateWriting, evaluateSpeaking, transcribeAudio, hasGeminiKey, hasGroqKey } from '@/lib/practiceAI';
+import { evaluateWriting, evaluateSpeaking, hasGeminiKey } from '@/lib/practiceAI';
 import { SPEAKING_TOPICS, LEVEL_INFO, type SpeakingTopic, type CEFRLevel } from '@/data/speakingTopics';
 import type { PracticeSubmission } from '@/types/practice';
 
@@ -407,7 +407,7 @@ function SpeakingPanel({
           if (e.results[i].isFinal) recognitionTranscriptRef.current += e.results[i][0].transcript + ' ';
         }
       };
-      recognition.onerror = () => { /* ignore — transcription will fall back to Groq or manual */ };
+      recognition.onerror = () => { /* ignore — falls back to manual entry if no transcript is captured */ };
       recognition.start();
       recognitionRef.current = recognition;
     } catch { /* SpeechRecognition unsupported in this browser */ }
@@ -420,7 +420,7 @@ function SpeakingPanel({
     setAudioBlob(file);
     setAudioUrl(URL.createObjectURL(file));
     setFileName(file.name);
-    recognitionTranscriptRef.current = ''; // no live transcript for uploaded files — Groq required
+    recognitionTranscriptRef.current = ''; // no live transcript available for uploaded files
     const audio = new Audio(URL.createObjectURL(file));
     audio.onloadedmetadata = () => setRecordedSeconds(Math.round(audio.duration || 0));
   };
@@ -432,20 +432,14 @@ function SpeakingPanel({
     setLastResult(null);
 
     try {
-      // Step 1: transcribe (Groq Whisper preferred — works for both recordings
-      // and uploaded files; Web Speech result is a fallback for live recordings only)
-      let transcript = '';
-      if (hasGroqKey()) {
-        try {
-          const adminCfg = JSON.parse(localStorage.getItem('moe_admin_api_cfg') || '{}');
-          transcript = await transcribeAudio(audioBlob, adminCfg.groq || '');
-        } catch { /* fall through to web speech result, if any */ }
-      }
-      if (!transcript) transcript = recognitionTranscriptRef.current.trim();
+      // Transcribe: Web Speech API live transcript (captured during recording).
+      // Uploaded files have no live transcript, so they require Chrome's
+      // recognition during playback isn't available — ask the user to record live instead.
+      const transcript = recognitionTranscriptRef.current.trim();
 
       if (!transcript) {
         setError(fileName
-          ? 'Could not transcribe this audio file automatically. Ask an admin to add a Groq API key, or try recording live instead.'
+          ? 'Could not transcribe this audio file automatically. Please record your answer live in Chrome instead of uploading a file.'
           : 'Could not transcribe your audio automatically. Try recording again in a quiet space, or use Chrome for best results.');
         setRecordState('idle');
         return;
@@ -484,10 +478,24 @@ function SpeakingPanel({
         <p className="text-sm text-[#7A5200]">{topic.speakingPrompt}</p>
       </div>
 
-      {!speechSupported && !hasGroqKey() && (
+      {topic.questions?.length > 0 && (
+        <div className="rounded-xl border border-border bg-card px-4 py-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Guiding Questions</p>
+          <ul className="space-y-1.5">
+            {topic.questions.map((q, i) => (
+              <li key={i} className="text-sm text-foreground flex gap-2">
+                <span className="text-muted-foreground font-medium shrink-0">{i + 1}.</span>
+                <span>{q}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {!speechSupported && (
         <div className="flex items-start gap-2 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2.5">
           <AlertCircle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700">Automatic transcription may not work well in this browser. Chrome is recommended, or ask an admin to add a Groq API key for reliable transcription (required for uploaded files).</p>
+          <p className="text-xs text-amber-700">Automatic transcription may not work well in this browser. Chrome is recommended for the best live speech-to-text results.</p>
         </div>
       )}
 

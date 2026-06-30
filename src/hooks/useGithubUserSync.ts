@@ -78,7 +78,7 @@ async function ghPut(
   const url = `https://api.github.com/repos/${config.repo}/contents/${path}`;
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
   const body: Record<string, string> = {
-    message: `[MoE] ${message} — ${new Date().toISOString()}`,
+    message: `[LexoMaster] ${message} — ${new Date().toISOString()}`,
     content: encoded,
     branch: config.branch,
   };
